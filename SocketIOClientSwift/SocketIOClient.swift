@@ -76,12 +76,14 @@ public final class SocketIOClient: NSObject, SocketEngineClient, SocketLogClient
     Create a new SocketIOClient. opts can be omitted
     */
     public init(var socketURL:String, opts:[String: AnyObject]? = nil) {
-        if socketURL["https://"].matches().count != 0 {
+        if (socketURL["https://"].matches().count != 0) || (socketURL["wss://"].matches().count != 0) {
             self._secure = true
         }
         
         socketURL = socketURL["http://"] ~= ""
         socketURL = socketURL["https://"] ~= ""
+        socketURL = socketURL["ws://"] ~= ""
+        socketURL = socketURL["wss://"] ~= ""
         
         self.socketURL = socketURL
         self.opts = opts
