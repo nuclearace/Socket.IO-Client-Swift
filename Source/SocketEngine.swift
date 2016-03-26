@@ -60,8 +60,6 @@ public final class SocketEngine: NSObject, SocketEnginePollable, SocketEngineWeb
 
     public weak var client: SocketEngineClient?
 
-    private let allowedCharacterSet = NSCharacterSet(charactersInString: "!*'();:@&=+$,/?%#[]\" {}").invertedSet
-    
     private weak var sessionDelegate: NSURLSessionDelegate?
 
     private typealias Probe = (msg: String, type: SocketEnginePacketType, data: [NSData])

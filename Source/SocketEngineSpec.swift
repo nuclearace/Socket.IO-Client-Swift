@@ -63,16 +63,22 @@ import Foundation
 }
 
 extension SocketEngineSpec {
+    var allowedCharacterSet: NSCharacterSet {
+        return NSCharacterSet(charactersInString: "!*'();:@&=+$,/?%#[]\" {}").invertedSet
+    }
+
     var urlPollingWithSid: NSURL {
         let com = NSURLComponents(URL: urlPolling, resolvingAgainstBaseURL: false)!
-        com.percentEncodedQuery = com.percentEncodedQuery! + "&sid=\(sid)"
+        let sidEsc = sid.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacterSet)!
+        com.percentEncodedQuery = com.percentEncodedQuery! + "&sid=\(sidEsc)"
         
         return com.URL!
     }
     
     var urlWebSocketWithSid: NSURL {
         let com = NSURLComponents(URL: urlWebSocket, resolvingAgainstBaseURL: false)!
-        com.percentEncodedQuery = com.percentEncodedQuery! + (sid == "" ? "" : "&sid=\(sid)")
+        let sidEsc = sid.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacterSet)!
+        com.percentEncodedQuery = com.percentEncodedQuery! + (sid == "" ? "" : "&sid=\(sidEsc)")
         
         return com.URL!
     }
