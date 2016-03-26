@@ -59,6 +59,8 @@ public final class SocketEngine: NSObject, SocketEnginePollable, SocketEngineWeb
     public private(set) var ws: WebSocket?
 
     public weak var client: SocketEngineClient?
+
+    private let allowedCharacterSet = NSCharacterSet(charactersInString: "!*'();:@&=+$,/?%#[]\" {}").invertedSet
     
     private weak var sessionDelegate: NSURLSessionDelegate?
 
@@ -248,12 +250,21 @@ public final class SocketEngine: NSObject, SocketEnginePollable, SocketEngineWeb
 
         if connectParams != nil {
             for (key, value) in connectParams! {
-                queryString += "&\(key)=\(value)"
+
+                let keyEsc = key.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacterSet)!
+
+                if value is String {
+                    let valueEsc = (value as! String).stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacterSet)!
+                    queryString += "&\(keyEsc)=\(valueEsc)"
+                } else {
+                    queryString += "&\(keyEsc)=\(value)"
+                }
+
             }
         }
 
-        urlWebSocket.query = urlWebSocket.query! + queryString
-        urlPolling.query = urlPolling.query! + queryString
+        urlWebSocket.percentEncodedQuery = urlWebSocket.query! + queryString
+        urlPolling.percentEncodedQuery = urlPolling.query! + queryString
         
         return (urlPolling.URL!, urlWebSocket.URL!)
     }
